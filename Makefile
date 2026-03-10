@@ -3,7 +3,7 @@ NAME := Inception
 COMPOSE := docker compose -f srcs/docker-compose.yml
 DATA_DIR := /home/amugisha/data
 
-.PHONY: all build up down stop clean logs ps gen-certs nginx-test
+.PHONY: all build up down clean logs ps gen-certs fclean re
 
 all: gen-certs build up
 
@@ -29,18 +29,18 @@ ps:
 
 fclean: clean
 	docker system prune -a --volumes -f
-	rm -rf secrets/certs
+	rm -rf srcs/requirements/nginx/certs
 
 re: fclean all
 
 gen-certs:
-	mkdir -p secrets/certs
-	@if [ ! -f secrets/certs/server.key ] || [ ! -f secrets/certs/server.crt ]; then \
-	  echo "Generating self-signed certs in ./secrets/certs..."; \
+	mkdir -p srcs/requirements/nginx/certs
+	@if [ ! -f srcs/requirements/nginx/certs/server.key ] || [ ! -f srcs/requirements/nginx/certs/server.crt ]; then \
+	  echo "Generating self-signed certs in ./srcs/requirements/nginx/certs..."; \
 	  openssl req -x509 -noenc -days 365 -newkey rsa:2048 \
 	    -subj "/CN=amugisha.42.fr" \
-	    -keyout secrets/certs/server.key \
-	    -out secrets/certs/server.crt; \
+	    -keyout srcs/requirements/nginx/certs/server.key \
+	    -out srcs/requirements/nginx/certs/server.crt; \
 	else \
-	  echo "secrets/certs/server.key and secrets/certs/server.crt already exist - skipping"; \
+	  echo "srcs/requirements/nginx/certs/server.key and srcs/requirements/nginx/certs/server.crt already exist - skipping"; \
 	fi
